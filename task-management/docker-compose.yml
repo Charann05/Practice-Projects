@@ -1,9 +1,16 @@
 services:
 
+  frontend:
+    container_name: tm-frontend
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    container_name: tm-backend
+    build: ./backend
     ports:
       - "3000:3000"
     environment:
@@ -16,6 +23,7 @@ services:
       - db
 
   db:
+    container_name: tm-db
     image: postgres:14-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -24,7 +32,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - backend_postgres_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  backend_postgres_data:
+    external: true
